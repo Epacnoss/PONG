@@ -14,7 +14,7 @@ class table:
         hdw=dashWidth / 2 # hdw=HalfDashWidth
         dashTuple = (15,23)
 
-        if(horizNet == False):
+        if not horizNet:
             self.canvas.create_line(w/2 - hdw, 0, w/2 - hdw, h, width=dashWidth, fill=netColour, dash=dashTuple)
         else:
             self.canvas.create_line(0, h/2 - hdw, w, h/2 - hdw, width=dashWidth, fill=netColour, dash=dashTuple)

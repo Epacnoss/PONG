@@ -2,7 +2,7 @@ import table, random
 
 class ball:
 
-    def __init__ (self, table, w=14, h=14, colour="red", xSpd=6, ySpd=4, xStart=0, yStart=0):
+    def __init__ (self, table, w=14, h=14, colour="red", xSpd=3, ySpd=2, xStart=0, yStart=0):
         self.w = w
         self.h = h
         self.x = xStart
@@ -13,6 +13,9 @@ class ball:
         self.yStart = yStart
         self.xSpd = xSpd
         self.ySpd = ySpd
+        self.xStartSpd = xSpd
+        self.yStartSpd = ySpd
+        self.needsToReverse = False
 
         self.table = table
         self.circle = self.table.drawOval(self)
@@ -22,9 +25,15 @@ class ball:
         self.x = self.xStart
         self.y = self.yStart
     
-    def startBall (self, xSpd, ySpd):
-        self.xSpd = -xSpd if random.randint(0, 1) else xSpd
-        self.ySpd = -ySpd if random.randint(0, 1) else ySpd
+    def startBall (self):
+        if not self.needsToReverse:
+            self.xSpd = self.xStartSpd
+            self.needsToReverse = True
+        else:
+            self.xSpd = -self.xStartSpd
+            self.needsToReverse = False
+
+        self.ySpd = 0
         self.startPos()
     
     def moveNext (self):
@@ -38,33 +47,29 @@ class ball:
         prevNoHits = self.noHits
         # hitsToAdd = random.randint(-prevNoHits, prevNoHits)
 
-        if(self.x <= 3):
+        if self.x <= 3:
             self.noHits += 1
             # self.xSpd = random.randint(-10 - hitsToAdd, 10 + hitsToAdd)
             self.x = 3
             self.xSpd *= -1
 
-        if(self.x >= twMinusWMinus3):
+        if self.x >= twMinusWMinus3:
             self.noHits += 1
             # self.xSpd = random.randint(-10 - hitsToAdd, 10 + hitsToAdd)
             self.x = twMinusWMinus3
             self.xSpd *= -1
         
-        if(self.y <= 3):
+        if self.y <= 3:
             self.noHits += 1
             # self.ySpd = random.randint(-10 - hitsToAdd, 10 + hitsToAdd)
             self.y = 3
             self.ySpd *= -1
         
-        if(self.y >= thMinusHMinus3):
+        if self.y >= thMinusHMinus3:
             self.noHits += 1
             # self.ySpd = random.randint(-10 - hitsToAdd, 10 + hitsToAdd)
             self.y = thMinusHMinus3
             self.ySpd *= -1
-
-
-        if(prevNoHits != self.noHits):
-            print("I hit something......", self.noHits)
 
         x1 = self.x
         x2 = x1 + self.w
@@ -73,3 +78,8 @@ class ball:
         y2 = y1 + self.h
 
         self.table.moveItem(self.circle, x1, y1, x2, y2)
+
+    def stop(self):
+        self.ySpd = 0
+        self.xSpd = 0
+        print("Ball Stopped")
