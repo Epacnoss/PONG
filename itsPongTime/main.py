@@ -5,8 +5,6 @@ import bat
 import random
 import table
 
-REASON_FOR_STOP = ("L-GOAL", "R-GOAL", "SPACE-RESTART")
-
 def runGame(scoreLeft_, scoreRight_):
 
     xVel = random.randint(7, 10)
@@ -22,50 +20,52 @@ def runGame(scoreLeft_, scoreRight_):
     ballActual = ball.ball(table=tableActual, xSpd=xVel, ySpd=yVel, w=24, h=24, colour="red", xStart=xPos, yStart=yPos)
 
     lBat = bat.bat(table=tableActual, w=15, h=100, xPos=20, yPos=150, colour="blue")
-    rBat = bat.bat(table=tableActual, w=15, h=100, xPos=575, yPos=150, colour="yellow")
+    # rBat = bat.bat(table=tableActual, w=15, h=100, xPos=575, yPos=150, colour="yellow")
 
     def gameFlow(scoreLeft, scoreRight):
         leftColl = lBat.detectCollision(ballActual)
-        righColl = rBat.detectCollision(ballActual)
-
-        if leftColl[0]:
-            print("LCOL: ", leftColl[1])
-        elif righColl[0]:
-            print("RCOL: " + righColl[1])
+        # righColl = rBat.detectCollision(ballActual)
 
         ballActual.moveNext()
 
         if ballActual.x <= 3:
-            restart(0, scoreLeft, scoreRight)
+            restart(False)
+            scoreRight += 1
         elif ballActual.x + ballActual.w >= tableActual.w - 3:
-            restart(1, scoreLeft, scoreRight)
+            restart(False)
+            scoreLeft += 1
 
-        window.after(50, gameFlow)
+        def gf ():
+            gameFlow(scoreLeft, scoreRight)
+            # print(scoreLeft)
+            # print(scoreRight)
 
-    def restart(reason, scoreLeft, scoreRight):
+        window.after(50, gf)
+
+
+    def restart (space):
+
+        if(space):
+            scoreLeft_ = 0
+            scoreRight_ = 0
 
         ballActual.stop()
         ballActual.startPos()
         lBat.startPos()
-        rBat.startPos()
+        # rBat.startPos()
 
         tableActual.moveItem(lBat.rect, 20, 150, 35, 250)
-        tableActual.moveItem(rBat.rect, 575, 150, 590, 250)
+        # tableActual.moveItem(rBat.rect, 575, 150, 590, 250)
 
         ballActual.startBall()
 
-        if reason == 0:
-            scoreRight += 1
-        elif reason == 1:
-            scoreLeft += 1
-
     def spaceRestart (master):
-        restart(2, -1, -1)
+        restart(True)
 
     window.bind("w", lBat.moveUp)
     window.bind("s", lBat.moveDown)
-    window.bind("<Up>", rBat.moveUp)
-    window.bind("<Down>", rBat.moveDown)
+    # window.bind("<Up>", rBat.moveUp)
+    # window.bind("<Down>", rBat.moveDown)
     window.bind("<space>", spaceRestart)
 
     gameFlow(scoreLeft_, scoreRight_)
